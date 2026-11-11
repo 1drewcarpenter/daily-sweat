@@ -6,15 +6,15 @@
 <meta name="theme-color" content="#172b27">
 <title>Pause & Write — A moment for yourself</title>
 <style>
-:root{--ink:#172b27;--muted:#66756f;--paper:#f5f4ed;--card:#fffefa;--line:#e4e5da;--green:#315f4e;--mint:#dcebe1;--soft:#f0f4ed;--peach:#f8eee5}
+:root{--ink:#203b50;--muted:#627b8e;--paper:#eaf4fb;--card:#f8fcff;--line:#cddfeb;--green:#477da5;--mint:#d9ebf8;--soft:#e8f3fb;--peach:#e5f1fa}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
 main{max-width:820px;margin:auto;padding:22px 15px 48px}
-header{background:var(--ink);color:#fffefa;border-radius:22px;padding:25px;margin-bottom:15px}
+header{background:linear-gradient(135deg,#477fa8 0%,#6f9fbe 55%,#8bb5cf 100%);color:#fff;border-radius:22px;padding:25px;margin-bottom:15px}
 .topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#b8d1c2;font-weight:750}
-.pill{background:#29473d;color:#e4f0e8;border-radius:99px;padding:7px 12px;font-size:12px}
+.kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#e5f3fc;font-weight:750}
+.pill{background:rgba(31,67,94,.35);color:#f2f9ff;border-radius:99px;padding:7px 12px;font-size:12px}
 h1{font-size:clamp(30px,6vw,43px);line-height:1.05;margin:10px 0}
-header p{color:#d5e1d9;margin:8px 0 0}
+header p{color:#edf7ff;margin:8px 0 0}
 .panel,.daynav,.support{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:13px 0}
 .datebar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 button{font:inherit;border:1px solid var(--line);border-radius:11px;padding:9px 12px;background:white;color:var(--ink);cursor:pointer}
@@ -22,7 +22,7 @@ button.primary{background:var(--green);color:white;border-color:var(--green)}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e6a37d;outline-offset:2px}
 #selectedDate{font-weight:750;font-size:17px;flex:1;min-width:180px}
 .weekgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
-.day{padding:8px 2px;text-align:center;border-radius:11px;background:#f2f3ed;font-size:12px;color:var(--muted)}
+.day{padding:8px 2px;text-align:center;border-radius:11px;background:#edf5fb;font-size:12px;color:var(--muted)}
 .day b{display:block;color:var(--ink);font-size:15px;margin:3px 0}
 .day.active{background:var(--mint);outline:2px solid var(--green)}
 .day small{display:block;font-size:9px}
@@ -32,14 +32,14 @@ h2{font-size:20px;margin:0 0 5px}.sub{color:var(--muted);font-size:14px;margin:0
 .stephead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .num{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border-radius:50%;background:var(--mint);color:var(--green);font-weight:800;font-size:13px}
 .step h3{font-size:16px;margin:0}.hint{font-size:13px;color:var(--muted);margin:0 0 9px 38px}
-textarea{display:block;width:100%;min-height:86px;resize:vertical;border:1px solid #c9dced;border-radius:12px;padding:12px;background:#edf6ff;color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+textarea{display:block;width:100%;min-height:86px;resize:vertical;border:1px solid #bfd6e8;border-radius:12px;padding:12px;background:#eaf4fc;color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
 textarea::placeholder{color:#9aa49e}
 .feelings{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0 38px}
-.feelings label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:7px 11px;font-size:13px;cursor:pointer;background:white}
+.feelings label{display:inline-flex;align-items:center;gap:6px;border:1px solid #cbdfee;border-radius:99px;padding:7px 11px;font-size:13px;cursor:pointer;background:#f1f8fd}
 .feelings input{accent-color:var(--green)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;align-items:center}
 .status{font-size:12px;color:var(--muted);margin-left:auto}
-.closing{background:var(--peach);border-radius:13px;padding:14px;margin-top:15px;font-size:14px}
+.closing{background:#e1eff9;border:1px solid #cbdfee;border-radius:13px;padding:14px;margin-top:15px;font-size:14px}
 .closing strong{display:block;margin-bottom:4px}
 .support h2{margin-bottom:8px}.support p{font-size:14px;color:var(--muted);margin:5px 0}
 details{margin-top:12px}summary{cursor:pointer;font-weight:700}
