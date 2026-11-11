@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#172b27">
+<title>Pause & Write — A moment for yourself</title>
+<style>
+:root{--ink:#172b27;--muted:#66756f;--paper:#f5f4ed;--card:#fffefa;--line:#e4e5da;--green:#315f4e;--mint:#dcebe1;--soft:#f0f4ed;--peach:#f8eee5}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:820px;margin:auto;padding:22px 15px 48px}
+header{background:var(--ink);color:#fffefa;border-radius:22px;padding:25px;margin-bottom:15px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:#b8d1c2;font-weight:750}
+.pill{background:#29473d;color:#e4f0e8;border-radius:99px;padding:7px 12px;font-size:12px}
+h1{font-size:clamp(30px,6vw,43px);line-height:1.05;margin:10px 0}
+header p{color:#d5e1d9;margin:8px 0 0}
+.panel,.daynav,.support{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:13px 0}
+.datebar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+button{font:inherit;border:1px solid var(--line);border-radius:11px;padding:9px 12px;background:white;color:var(--ink);cursor:pointer}
+button.primary{background:var(--green);color:white;border-color:var(--green)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e6a37d;outline-offset:2px}
+#selectedDate{font-weight:750;font-size:17px;flex:1;min-width:180px}
+.weekgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
+.day{padding:8px 2px;text-align:center;border-radius:11px;background:#f2f3ed;font-size:12px;color:var(--muted)}
+.day b{display:block;color:var(--ink);font-size:15px;margin:3px 0}
+.day.active{background:var(--mint);outline:2px solid var(--green)}
+.day small{display:block;font-size:9px}
+h2{font-size:20px;margin:0 0 5px}.sub{color:var(--muted);font-size:14px;margin:0}
+.intro{background:var(--soft);border-radius:13px;padding:14px;margin:12px 0 16px}
+.step{padding:15px 0;border-bottom:1px solid var(--line)}.step:last-of-type{border-bottom:0}
+.stephead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.num{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border-radius:50%;background:var(--mint);color:var(--green);font-weight:800;font-size:13px}
+.step h3{font-size:16px;margin:0}.hint{font-size:13px;color:var(--muted);margin:0 0 9px 38px}
+textarea{display:block;width:100%;min-height:86px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fffefa;color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+textarea::placeholder{color:#9aa49e}
+.feelings{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0 38px}
+.feelings label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:7px 11px;font-size:13px;cursor:pointer;background:white}
+.feelings input{accent-color:var(--green)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;align-items:center}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.closing{background:var(--peach);border-radius:13px;padding:14px;margin-top:15px;font-size:14px}
+.closing strong{display:block;margin-bottom:4px}
+.support h2{margin-bottom:8px}.support p{font-size:14px;color:var(--muted);margin:5px 0}
+details{margin-top:12px}summary{cursor:pointer;font-weight:700}
+.history{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.history button{font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+@media(max-width:520px){main{padding:13px 10px 35px}.panel,.daynav,.support{padding:14px}.weekgrid{gap:3px}.day{font-size:11px}.hint,.feelings{margin-left:0}.status{width:100%;margin-left:0}}
+@media print{body{background:white}main{max-width:none;padding:0}header{background:white;color:#172b27;padding:8px 0}header p,.kicker{color:#52645b}.pill,.daynav,.actions,.support,footer{display:none!important}.panel{border:0;padding:0}.step textarea{border:1px solid #bbb;min-height:70px}}
+</style>
+</head>
+<body><main>
+<header>
+ <div class="topline"><span class="kicker">A little space before the next bite</span><span class="pill">Your private reflection journal</span></div>
+ <h1>Pause & Write ✦</h1>
+ <p>Pause. Notice what you're feeling. Put it into words. There is no perfect answer, and no judgment here.</p>
+</header>
+<section class="daynav">
+ <div class="datebar"><button id="prev" aria-label="Previous day">←</button><div id="selectedDate" aria-live="polite"></div><button id="next" aria-label="Next day">→</button><button id="today" class="primary">Today</button></div>
+ <div class="weekgrid" id="weekGrid"></div>
+ <div class="history" id="history"></div>
+</section>
+<section class="panel">
+ <div class="topline"><span class="kicker" style="color:var(--green)">Before you eat</span><span class="sub" id="savedLabel">Saved on this device</span></div>
+ <h2>Take a moment to check in</h2>
+ <p class="sub">If you feel pulled toward extra food, pause here first if you can. Take a breath. You don't have to solve everything right now.</p>
+ <div class="intro"><strong>A gentle reminder</strong><br>Hunger is not a failure, and eating is not something to feel ashamed of. This exercise is simply a way to understand what you need in this moment.</div>
+ <div class="step">
+  <div class="stephead"><span class="num">1</span><h3>What am I feeling right now?</h3></div>
+  <p class="hint">Describe what's happening in your body, mind, and emotions. Try to be specific and honest.</p>
+  <textarea id="feeling" placeholder="Right now I feel…"></textarea>
+  <div class="feelings" id="feelingChoices">
+   <label><input type="checkbox" value="Angry"> Angry</label><label><input type="checkbox" value="Afraid"> Afraid</label><label><input type="checkbox" value="Lonely"> Lonely</label><label><input type="checkbox" value="Stressed"> Stressed</label><label><input type="checkbox" value="Bored"> Bored</label><label><input type="checkbox" value="Sad"> Sad</label><label><input type="checkbox" value="Tired"> Tired</label><label><input type="checkbox" value="Anxious"> Anxious</label><label><input type="checkbox" value="Physically hungry"> Physically hungry</label><label><input type="checkbox" value="Not sure"> Not sure</label>
+  </div>
+ </div>
+ <div class="step">
+  <div class="stephead"><span class="num">2</span><h3>What do I think the extra food will do for me?</h3></div>
+  <p class="hint">Comfort me? Distract me? Help me relax? Fill some kind of emptiness? Something else?</p>
+  <textarea id="benefit" placeholder="I think eating this will…"></textarea>
+ </div>
+ <div class="step">
+  <div class="stephead"><span class="num">3</span><h3>What is the likely result if I eat it?</h3></div>
+  <p class="hint">Look beyond the first few minutes. What might happen physically and emotionally?</p>
+  <textarea id="result" placeholder="The likely result is…"></textarea>
+ </div>
+ <div class="step">
+  <div class="stephead"><span class="num">4</span><h3>How do I think I will feel an hour later?</h3></div>
+  <p class="hint">Imagine yourself one hour from now. What might you be thinking or feeling?</p>
+  <textarea id="later" placeholder="An hour later, I may feel…"></textarea>
+ </div>
+ <div class="step">
+  <div class="stephead"><span class="num">5</span><h3>What might I actually need right now?</h3></div>
+  <p class="hint">Is there another way to respond to the feeling? A call, a little rest, a change of scene, a meal if you're hungry, or simply being kind to yourself?</p>
+  <textarea id="need" placeholder="What I may need is… One small thing I could try is…"></textarea>
+ </div>
+ <div class="step">
+  <div class="stephead"><span class="num">6</span><h3>What support can I reach for?</h3></div>
+  <p class="hint">Could I contact another OA member or someone I trust? If making the call feels difficult, write what you would want to say.</p>
+  <textarea id="supportText" placeholder="The person I could contact is… What I'd like to say is…"></textarea>
+ </div>
+ <div class="closing"><strong>A moment of insight</strong>Grant me insight and self-understanding. Help me respond to what I'm truly feeling with honesty and kindness.</div>
+ <div class="actions"><button class="primary" id="save">Save reflection</button><button id="clear">Clear this reflection</button><button id="print">Print</button><span class="status" id="status" role="status">Changes save automatically</span></div>
+ <details><summary>After the moment — optional follow-up</summary>
+  <p class="sub" style="margin:8px 0">If you'd like, come back later and record what happened. Whatever happened, this is information, not a grade.</p>
+  <textarea id="after" placeholder="What did I choose? What did I notice? What would I like to remember next time?"></textarea>
+ </details>
+</section>
+<section class="support">
+ <h2>Remember</h2>
+ <p>You do not have to make a perfect choice. You can pause, reach out, eat if you're hungry, and begin again at any time.</p>
+ <p><strong>Your writing is yours.</strong> Entries are stored in this browser on this device. They are not sent to a server and will not automatically sync to another device.</p>
+ <details><summary>Export or back up my journal</summary>
+  <p>Download a copy of your saved reflections so you can keep a backup.</p>
+  <button id="export">Download my journal</button>
+ </details>
+</section>
+<footer>Progress over perfection · One moment at a time</footer>
+</main>
+<script>
+const ids=['feeling','benefit','result','later','need','supportText','after'];
+const short=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let selected=new Date();let timer;
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function read(){try{return JSON.parse(localStorage.getItem('pauseWriteJournalV1')||'{}')}catch(e){return {}}}
+function write(data){localStorage.setItem('pauseWriteJournalV1',JSON.stringify(data))}
+function checked(){return [...document.querySelectorAll('#feelingChoices input:checked')].map(x=>x.value)}
+function collect(){const v={};ids.forEach(id=>v[id]=document.getElementById(id).value);v.tags=checked();v.updated=new Date().toISOString();return v}
+function setStatus(t){document.getElementById('status').textContent=t}
+function save(silent=false){const d=read();d[key(selected)]=collect();write(d);renderCalendar();if(!silent)setStatus('Saved ✓')}
+function autosave(){setStatus('Saving…');clearTimeout(timer);timer=setTimeout(()=>save(true),350)}
+function loadDay(){const entry=read()[key(selected)]||{};ids.forEach(id=>document.getElementById(id).value=entry[id]||'');document.querySelectorAll('#feelingChoices input').forEach(x=>x.checked=(entry.tags||[]).includes(x.value));setStatus(entry.updated?'Your reflection is saved on this device':'A fresh page for today');}
+function renderCalendar(){const grid=document.getElementById('weekGrid');grid.innerHTML='';const start=new Date(selected);start.setDate(selected.getDate()-selected.getDay());const data=read();for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const b=document.createElement('button');b.className='day'+(key(d)===key(selected)?' active':'');const mark=data[key(d)]&&ids.some(id=>(data[key(d)][id]||'').trim())?' •':'';b.innerHTML=short[i]+'<b>'+d.getDate()+mark+'</b><small>'+ (d.getMonth()+1)+'/'+(d.getDate())+'</small>';b.onclick=()=>{save(true);selected=d;render()};grid.append(b)}
+ const hist=document.getElementById('history');hist.innerHTML='';Object.keys(data).sort().reverse().slice(0,5).forEach(k=>{const b=document.createElement('button');const d=new Date(k+'T12:00:00');b.textContent=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});b.onclick=()=>{save(true);selected=d;render()};hist.append(b)})}
+function render(){document.getElementById('selectedDate').textContent=selected.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});loadDay();renderCalendar()}
+document.getElementById('prev').onclick=()=>{save(true);selected.setDate(selected.getDate()-1);render()};
+document.getElementById('next').onclick=()=>{save(true);selected.setDate(selected.getDate()+1);render()};
+document.getElementById('today').onclick=()=>{save(true);selected=new Date();render()};
+ids.forEach(id=>document.getElementById(id).addEventListener('input',autosave));
+document.querySelectorAll('#feelingChoices input').forEach(x=>x.addEventListener('change',()=>save(true)));
+document.getElementById('save').onclick=()=>save();
+document.getElementById('clear').onclick=()=>{if(!confirm('Clear the writing on this date? This cannot be undone.'))return;const d=read();delete d[key(selected)];write(d);loadDay();renderCalendar();setStatus('Reflection cleared')};
+document.getElementById('print').onclick=()=>window.print();
+document.getElementById('export').onclick=()=>{const blob=new Blob([JSON.stringify(read(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pause-and-write-journal.json';a.click();URL.revokeObjectURL(url)};
+window.addEventListener('beforeunload',()=>{clearTimeout(timer);save(true)});
+render();
+</script></body></html>
