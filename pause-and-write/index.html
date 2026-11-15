@@ -147,5 +147,8 @@ document.getElementById('clear').onclick=()=>{if(!confirm('Clear the writing on 
 document.getElementById('print').onclick=()=>window.print();
 document.getElementById('export').onclick=()=>{const blob=new Blob([JSON.stringify(read(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pause-and-write-journal.json';a.click();URL.revokeObjectURL(url)};
 window.addEventListener('beforeunload',()=>{flushAutosave()});
+// Remove a current-day entry only when it is an exact autosave duplicate of an earlier day.
+function removeAccidentalCarryover(){const today=key(new Date());const data=read();const current=data[today];if(!current)return;const priorKeys=Object.keys(data).filter(k=>k<today).sort().reverse();for(const k of priorKeys){const prior=data[k];if(prior&&current.updated&&current.updated===prior.updated&&ids.every(id=>(current[id]||'')===(prior[id]||''))&&JSON.stringify(current.tags||[])===JSON.stringify(prior.tags||[])){delete data[today];write(data);break}}}
+removeAccidentalCarryover();
 render();
 </script></body></html>
