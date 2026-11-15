@@ -122,28 +122,30 @@ footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
 <script>
 const ids=['feeling','benefit','result','later','need','supportText','after'];
 const short=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-let selected=new Date();let timer;
+let selected=new Date();let timer;let pendingEntry=null;let pendingDay=null;
 const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function read(){try{return JSON.parse(localStorage.getItem('pauseWriteJournalV1')||'{}')}catch(e){return {}}}
 function write(data){localStorage.setItem('pauseWriteJournalV1',JSON.stringify(data))}
 function checked(){return [...document.querySelectorAll('#feelingChoices input:checked')].map(x=>x.value)}
 function collect(){const v={};ids.forEach(id=>v[id]=document.getElementById(id).value);v.tags=checked();v.updated=new Date().toISOString();return v}
 function setStatus(t){document.getElementById('status').textContent=t}
-function save(silent=false){const d=read();d[key(selected)]=collect();write(d);renderCalendar();if(!silent)setStatus('Saved ✓')}
-function autosave(){setStatus('Saving…');clearTimeout(timer);timer=setTimeout(()=>save(true),350)}
+function saveEntry(day,entry){const d=read();d[day]=entry;write(d);renderCalendar()}
+function flushAutosave(){if(timer){clearTimeout(timer);timer=null}if(pendingEntry&&pendingDay){saveEntry(pendingDay,pendingEntry);pendingEntry=null;pendingDay=null}}
+function save(silent=false){if(timer||pendingEntry)flushAutosave();saveEntry(key(selected),collect());if(!silent)setStatus('Saved ✓')}
+function autosave(){pendingDay=key(selected);pendingEntry=collect();setStatus('Saving…');clearTimeout(timer);timer=setTimeout(()=>{if(pendingEntry&&pendingDay){saveEntry(pendingDay,pendingEntry);pendingEntry=null;pendingDay=null}timer=null},350)}
 function loadDay(){const entry=read()[key(selected)]||{};ids.forEach(id=>document.getElementById(id).value=entry[id]||'');document.querySelectorAll('#feelingChoices input').forEach(x=>x.checked=(entry.tags||[]).includes(x.value));setStatus(entry.updated?'Your reflection is saved on this device':'A fresh page for today');}
-function renderCalendar(){const grid=document.getElementById('weekGrid');grid.innerHTML='';const start=new Date(selected);start.setDate(selected.getDate()-selected.getDay());const data=read();for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const b=document.createElement('button');b.className='day'+(key(d)===key(selected)?' active':'');const mark=data[key(d)]&&ids.some(id=>(data[key(d)][id]||'').trim())?' •':'';b.innerHTML=short[i]+'<b>'+d.getDate()+mark+'</b><small>'+ (d.getMonth()+1)+'/'+(d.getDate())+'</small>';b.onclick=()=>{save(true);selected=d;render()};grid.append(b)}
- const hist=document.getElementById('history');hist.innerHTML='';Object.keys(data).sort().reverse().slice(0,5).forEach(k=>{const b=document.createElement('button');const d=new Date(k+'T12:00:00');b.textContent=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});b.onclick=()=>{save(true);selected=d;render()};hist.append(b)})}
+function renderCalendar(){const grid=document.getElementById('weekGrid');grid.innerHTML='';const start=new Date(selected);start.setDate(selected.getDate()-selected.getDay());const data=read();for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const b=document.createElement('button');b.className='day'+(key(d)===key(selected)?' active':'');const mark=data[key(d)]&&ids.some(id=>(data[key(d)][id]||'').trim())?' •':'';b.innerHTML=short[i]+'<b>'+d.getDate()+mark+'</b><small>'+ (d.getMonth()+1)+'/'+(d.getDate())+'</small>';b.onclick=()=>{flushAutosave();selected=d;render()};grid.append(b)}
+ const hist=document.getElementById('history');hist.innerHTML='';Object.keys(data).sort().reverse().slice(0,5).forEach(k=>{const b=document.createElement('button');const d=new Date(k+'T12:00:00');b.textContent=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});b.onclick=()=>{flushAutosave();selected=d;render()};hist.append(b)})}
 function render(){document.getElementById('selectedDate').textContent=selected.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});loadDay();renderCalendar()}
-document.getElementById('prev').onclick=()=>{save(true);selected.setDate(selected.getDate()-1);render()};
-document.getElementById('next').onclick=()=>{save(true);selected.setDate(selected.getDate()+1);render()};
-document.getElementById('today').onclick=()=>{save(true);selected=new Date();render()};
+document.getElementById('prev').onclick=()=>{flushAutosave();selected.setDate(selected.getDate()-1);render()};
+document.getElementById('next').onclick=()=>{flushAutosave();selected.setDate(selected.getDate()+1);render()};
+document.getElementById('today').onclick=()=>{flushAutosave();selected=new Date();render()};
 ids.forEach(id=>document.getElementById(id).addEventListener('input',autosave));
 document.querySelectorAll('#feelingChoices input').forEach(x=>x.addEventListener('change',()=>save(true)));
 document.getElementById('save').onclick=()=>save();
-document.getElementById('clear').onclick=()=>{if(!confirm('Clear the writing on this date? This cannot be undone.'))return;const d=read();delete d[key(selected)];write(d);loadDay();renderCalendar();setStatus('Reflection cleared')};
+document.getElementById('clear').onclick=()=>{if(!confirm('Clear the writing on this date? This cannot be undone.'))return;if(timer){clearTimeout(timer);timer=null}pendingEntry=null;pendingDay=null;const d=read();delete d[key(selected)];write(d);loadDay();renderCalendar();setStatus('Reflection cleared')};
 document.getElementById('print').onclick=()=>window.print();
 document.getElementById('export').onclick=()=>{const blob=new Blob([JSON.stringify(read(),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='pause-and-write-journal.json';a.click();URL.revokeObjectURL(url)};
-window.addEventListener('beforeunload',()=>{clearTimeout(timer);save(true)});
+window.addEventListener('beforeunload',()=>{flushAutosave()});
 render();
 </script></body></html>
