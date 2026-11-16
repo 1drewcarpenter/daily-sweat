@@ -39,6 +39,17 @@ const plans={
 function key(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function load(){try{return JSON.parse(localStorage.getItem('dailySweatChecksV1')||'{}')}catch(e){return {}}}
 function save(d){localStorage.setItem('dailySweatChecksV1',JSON.stringify(d))}
+function prepareToday(){
+  const todayKey=key(new Date());
+  const lastOpened=localStorage.getItem('dailySweatLastOpenedDate');
+  if(lastOpened!==todayKey){
+    const data=load();
+    delete data[todayKey];
+    save(data);
+    localStorage.setItem('dailySweatLastOpenedDate',todayKey);
+  }
+}
+prepareToday();
 function render(){
 const k=key(selected),day=selected.getDay(),p=plans[day],checks=load()[k]||{};
 document.getElementById('selectedDate').textContent=selected.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
